@@ -6,11 +6,11 @@ gem 'rails', '4.2.0.beta2'
 gem 'rails-api'
 
 gem 'spring', :group => :development
-
+gem 'better_errors'
 
 gem 'sqlite3'
 
-
+gem 'faker'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'

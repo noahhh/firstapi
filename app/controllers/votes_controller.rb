@@ -1,22 +1,13 @@
 class VotesController < ApplicationController
-  # GET /votes
-  # GET /votes.json
+  before_filter :load_voter, only: [:create]
+  before_filter :restrict_access_to_voter, only: [:create]
+
   # def index
   #   @votes = Vote.all
   #
   #   render json: @votes
   # end
-  #
-  # # GET /votes/1
-  # # GET /votes/1.json
-  # def show
-  #   @vote = Vote.find(params[:id])
-  #
-  #   render json: @vote
-  # end
 
-  # POST /votes
-  # POST /votes.json
   def create
     @vote = Vote.new(vote_params)
 
@@ -27,28 +18,20 @@ class VotesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /votes/1
-  # PATCH/PUT /votes/1.json
-  # def update
-  #   @vote = Vote.find(params[:id])
-  #
-  #   if @vote.update(vote_params)
-  #     head :no_content
-  #   else
-  #     render json: @vote.errors, status: :unprocessable_entity
-  #   end
-  # end
-  #
-  # # DELETE /votes/1
-  # # DELETE /votes/1.json
-  # def destroy
-  #   @vote = Vote.find(params[:id])
-  #   @vote.destroy
-  #
-  #   head :no_content
-  # end
-
   private
+  def load_voter
+    @voter = Voter.find(params[:id])
+  end
+
+  def restrict_access_to_voter
+    authenticate_or_request_with_http_token do |token, options|
+      @voter.token == token
+    end
+
+    unless @voter.token == params[:token]
+      render nothing: true, status: :unauthorized
+    end
+  end
 
     def vote_params
       params.require(:vote).permit(:voter, :candidate)

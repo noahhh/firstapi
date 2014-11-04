@@ -1,34 +1,25 @@
 class VotersController < ApplicationController
-  # GET /voters
-  # GET /voters.json
-  # def index
-  #   @voters = Voter.all
-  #
-  #   render json: @voters
-  # end
+  include ActionController::HttpAuthentication::Token::ControllerMethods
 
-  # GET /voters/1
-  # GET /voters/1.json
+  before_filter :load_voter, only: [:show, :update]
+  before_filter :restrict_access_to_voter, only: [:update]
+
   def show
     @voter = Voter.find(params[:id])
 
     render json: @voter
   end
 
-  # POST /voters
-  # POST /voters.json
   def create
     @voter = Voter.new(voter_params)
 
     if @voter.save
-      render json: @voter, status: :created, location: @voter
+      render json: @voter.as_json(include_token: true), status: :created, location: @voter
     else
       render json: @voter.errors, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /voters/1
-  # PATCH/PUT /voters/1.json
   def update
     @voter = Voter.find(params[:id])
 
@@ -39,18 +30,23 @@ class VotersController < ApplicationController
     end
   end
 
-  # DELETE /voters/1
-  # DELETE /voters/1.json
-  # def destroy
-  #   @voter = Voter.find(params[:id])
-  #   @voter.destroy
-  #
-  #   head :no_content
-  # end
-
   private
 
-    def voter_params
-      params.require(:voter).permit(:name, :party)
+  def load_voter
+    @voter = Voter.find(params[:id])
+  end
+
+  def restrict_access_to_voter
+    authenticate_or_request_with_http_token do |token, options|
+      @voter.token == token
     end
+
+    unless @voter.token == params[:token]
+      render nothing: true, status: :unauthorized
+    end
+  end
+
+  def voter_params
+    params.require(:voter).permit(:name, :party)
+  end
 end

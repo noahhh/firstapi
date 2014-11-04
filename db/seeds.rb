@@ -5,3 +5,10 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+3.times do
+Candidate.create([{ name: Faker::Name.name, party: Faker::App.name}])
+end
+
+10.times do
+	Voter.create([{ name: Faker::Name.name, party: Faker::App.name}])
+end
