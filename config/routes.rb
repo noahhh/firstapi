@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :seats, except: [:new, :edit]
   resources :votes, except: [:new, :edit]
   resources :voters, except: [:new, :edit]
   resources :candidates, except: [:new, :edit]

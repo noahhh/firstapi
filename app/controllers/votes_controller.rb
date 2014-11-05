@@ -2,11 +2,11 @@ class VotesController < ApplicationController
   before_filter :load_voter, only: [:create]
   before_filter :restrict_access_to_voter, only: [:create]
 
-  # def index
-  #   @votes = Vote.all
-  #
-  #   render json: @votes
-  # end
+  def index
+    @votes = Vote.all
+
+    render json: @votes
+  end
 
   def create
     @vote = Vote.new(vote_params)
